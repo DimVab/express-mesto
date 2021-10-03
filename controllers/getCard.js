@@ -1,7 +1,7 @@
-const User = require('../models/user');
+const Card = require('../models/card');
 
-module.exports.getUser = (req, res) => {
-  User.findById(req.params.userId)
+module.exports.getCard = (req, res) => {
+  Card.findById(req.params.cardId)
     .then(user => res.status(200).send({ data: user }))
     .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
 };
