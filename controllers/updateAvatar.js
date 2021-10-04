@@ -26,6 +26,6 @@ module.exports.updateAvatar = (req, res) => {
         return res.status(400).send({ message: `Переданы некорректные данные в методы обновления аватара` });
       }
       console.log('Error:' + err);
-      return res.status(500).send({ message: 'Произошла ошибка' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };

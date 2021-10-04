@@ -13,6 +13,6 @@ module.exports.getUser = (req, res) => {
         return res.status(404).send({ message: `Пользователь по указанному _id не найден` });
       }
       console.log('Error:' + err);
-      return res.status(500).send({ message: 'Произошла ошибка' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };

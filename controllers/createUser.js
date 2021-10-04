@@ -11,6 +11,6 @@ module.exports.createUser = (req, res) => {
         return res.status(400).send({ message: `Переданы некорректные данные в методы создания пользователя` });
       }
       console.log('Error:' + err);
-      return res.status(500).send({ message: 'Произошла ошибка' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };

@@ -17,5 +17,5 @@ module.exports.dislikeCard = (req, res) =>
     return res.status(404).send({ message: `Передан несуществующий _id карточки` });
   }
   console.log('Error:' + err);
-  return res.status(500).send({ message: 'Произошла ошибка' });
+  return res.status(500).send({ message: 'На сервере произошла ошибка' });
 });

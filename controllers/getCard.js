@@ -13,6 +13,6 @@ module.exports.getCard = (req, res) => {
         return res.status(404).send({ message: `Карточка по указанному _id не найдена` });
       }
       console.log('Error:' + err);
-      return res.status(500).send({ message: 'Произошла ошибка' });
+      return res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 };

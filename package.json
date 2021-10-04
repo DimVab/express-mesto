@@ -4,7 +4,7 @@
   "description": "Backend-часть сайта Mesto",
   "main": "index.js",
   "scripts": {
-    "lint": "npx eslint",
+    "lint": "npx eslint .",
     "dev": "nodemon app.js",
     "start": "node app.js"
   },
