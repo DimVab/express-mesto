@@ -6,5 +6,16 @@ module.exports.likeCard = (req, res) =>
   { $addToSet: { likes: req.user._id } },
   { new: true }
 )
-.then(card => res.status(200).send({data: card}))
-.catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+.then((card) => {
+  if (!card) {
+    return res.status(404).send({ message: `Передан несуществующий _id карточки` });
+  }
+  res.status(200).send({ data: card });
+})
+.catch((err) => {
+  if (err.name === 'CastError') {
+    return res.status(404).send({ message: `Передан несуществующий _id карточки` });
+  }
+  console.log('Error:' + err);
+  return res.status(500).send({ message: 'Произошла ошибка' });
+});
