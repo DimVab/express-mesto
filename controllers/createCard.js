@@ -3,7 +3,7 @@ const Card = require('../models/card');
 module.exports.createCard = (req, res) => {
 
   const { name, link } = req.body;
-  if ( !link.includes("https//:") && !link.includes("http//:")) {
+  if ( link && !link.includes("https//:") && !link.includes("http//:")) {
     return  res.status(400).send({ message: `Передан некорректный адрес` });
   }
   const owner = req.user._id;
