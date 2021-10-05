@@ -14,7 +14,7 @@ module.exports.dislikeCard = (req, res) =>
 })
 .catch((err) => {
   if (err.name === 'CastError') {
-    return res.status(404).send({ message: `Передан несуществующий _id карточки` });
+    return res.status(400).send({ message: `Передан невалидный _id карточки` });
   }
   console.log('Error:' + err);
   return res.status(500).send({ message: 'На сервере произошла ошибка' });

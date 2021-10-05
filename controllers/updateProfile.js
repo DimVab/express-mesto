@@ -15,7 +15,7 @@ module.exports.updateProfile = (req, res) => {
     .then(user => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({ message: `Пользователь по указанному _id не найден` });
+        return res.status(400).send({ message: `Передан невалидный _id пользователя` });
       }
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: `Переданы некорректные данные в методы обновления профиля` });
