@@ -8,8 +8,7 @@ module.exports.updateProfile = (req, res) => {
   User.findByIdAndUpdate(userId, { name: name, about: about },
     {
       new: true,
-      runValidators: true,
-      upsert: true
+      runValidators: true
     }
     )
     .then(user => res.status(200).send({ data: user }))
