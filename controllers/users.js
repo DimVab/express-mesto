@@ -81,7 +81,7 @@ module.exports.updateAvatar = (req, res) => {
 
   const { avatar } = req.body;
 
-  if ( avatar && !avatar.includes("https//:") && !avatar.includes("http//:")) {
+  if ( avatar && !avatar.includes("https://") && !avatar.includes("http://")) {
     return  res.status(400).send({ message: `Переданы некорректные данные в методы обновления аватара` });
   }
   const userId = req.user._id;
