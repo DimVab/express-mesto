@@ -40,8 +40,8 @@ module.exports.getCard = (req, res) => {
     .orFail(() => {
       throw new NotFoundError('Карточка по указанному _id не найдена');
     })
-    .then((card) => {
-      res.status(200).send({ data: card });
+    .then((card) => {;
+      res.status(200).send({ data: card});
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -104,13 +104,22 @@ module.exports.dislikeCard = (req, res) =>
 });
 
 module.exports.deleteCard = (req, res) => {
-
-  Card.findByIdAndDelete(req.params.cardId)
+  Card.findById(req.params.cardId)
   .orFail(() => {
     throw new NotFoundError('Карточка по указанному _id не найдена');
   })
-  .then((card) => {
-    res.status(200).send({ message: "Карточка удалена" });
+  .then((card) => {;
+    return card.owner.toString();
+  })
+  .then((cardId) => {
+    if (req.user._id === cardId) {
+      Card.findByIdAndDelete(req.params.cardId)
+      .then(() => {
+        res.status(200).send({ message: "Карточка удалена" });
+      });
+    } else {
+      res.status(403).send({ message: 'Вам запрещено удалять чужие карточки'});
+    }
   })
   .catch((err) => {
     if (err.name === 'CastError') {
