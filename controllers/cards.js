@@ -5,15 +5,16 @@ module.exports.createCard = (req, res, next) => {
 
   const { name, link } = req.body;
 
-  if ( link && !link.includes("https://") && !link.includes("http://")) {
-    throw new BadRequestError(`Передан некорректный адрес`);
-  }
-
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
     .then(user => res.status(200).send({ data: user }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        err = new BadRequestError('Передан некорректный адрес');
+      }
+      next(err);
+    });
 };
 
 

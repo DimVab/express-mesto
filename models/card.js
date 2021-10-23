@@ -9,7 +9,12 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
-    required: true
+    required: true,
+    validate: {
+      validator: (avatar) => {
+        return /^https?:\/\/(www.)?[a-z0-9\-]+\.[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]+#?$/.test(avatar);
+      }
+    }
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

@@ -8,16 +8,15 @@ module.exports.createUser = (req, res, next) => {
 
   const { name, about, avatar, email, password } = req.body;
 
-  if (!validator.isEmail(email)) {
-    throw new BadRequestError('Ошибка валидации Email');
-  }
-
   bcrypt.hash(password, 10)
     .then(hash => User.create({ name, about, avatar, email, password: hash }))
     .then(user => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err.name === "MongoServerError" && err.code === 11000) {
-        err = new ConflictError('Такой emai уже существует');
+        err = new ConflictError('Такой email уже существует');
+      }
+      if (err.name === "ValidationError") {
+        err = new ConflictError('Ошибка валидации Email');
       }
       next(err);
     });
@@ -123,10 +122,6 @@ module.exports.updateProfile = (req, res, next) => {
 module.exports.updateAvatar = (req, res, next) => {
 
   const { avatar } = req.body;
-
-  if (!avatar.includes("https://") && !avatar.includes("http://")) {
-    throw new BadRequestError(`Переданы некорректные данные в методы обновления аватара`);
-  }
   const userId = req.user._id;
 
   User.findByIdAndUpdate(userId, { avatar: avatar },
@@ -138,5 +133,10 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => {
       res.status(200).send({ data: user });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        err = new BadRequestError('Переданы некорректные данные в методы обновления аватара');
+      }
+      next(err);
+    });
 };
