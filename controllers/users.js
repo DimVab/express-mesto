@@ -1,21 +1,31 @@
-const User = require('../models/user');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { BadRequestError, NotFoundError, ConflictError } = require('../errors/errors');
+
+const User = require('../models/user');
+const BadRequestError = require('../errors/bad-request-error');
+const NotFoundError = require('../errors/not-found-error');
+const ConflictError = require('../errors/conflict-error');
 
 module.exports.createUser = (req, res, next) => {
-
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
   bcrypt.hash(password, 10)
-    .then(hash => User.create({ name, about, avatar, email, password: hash }))
-    .then(user => res.status(200).send({ data: {name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id} }))
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((user) => res.status(200).send({
+      data: {
+        name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id,
+      },
+    }))
     .catch((err) => {
-      if (err.name === "MongoServerError" && err.code === 11000) {
+      if (err.name === 'MongoServerError' && err.code === 11000) {
         err = new ConflictError('Такой email уже существует');
       }
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         err = new BadRequestError('Ошибка валидации Email');
       }
       next(err);
@@ -30,30 +40,26 @@ module.exports.login = (req, res, next) => {
   }
 
   return User.findUserByCredentials(email, password)
-  .then((user) => {
-    const token = jwt.sign(
-      { _id: user._id },
-      '4896c10cdc1653614f09e73d4299ddcae7aa4bf7ab0e62211a08857947527149',
-      { expiresIn: '7d' }
-    );
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        '4896c10cdc1653614f09e73d4299ddcae7aa4bf7ab0e62211a08857947527149',
+        { expiresIn: '7d' },
+      );
 
-    res.cookie('jwt', token, {
-      maxAge: 3600000 * 24 * 7 ,
-      httpOnly: true
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      }).status(200).send({ message: 'Авторизация прошла успешно' });
     })
-    .status(200).send({ message: 'Авторизация прошла успешно' });
-  })
-  .catch(next);
-
-};
-
-
-module.exports.getUsers = (req, res, next) => {
-  User.find()
-    .then(users => res.status(200).send({ data: users }))
     .catch(next);
 };
 
+module.exports.getUsers = (req, res, next) => {
+  User.find()
+    .then((users) => res.status(200).send({ data: users }))
+    .catch(next);
+};
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
@@ -71,7 +77,7 @@ module.exports.getUser = (req, res, next) => {
     });
 };
 
-module.exports.getMyInfo = (req, res) => {
+module.exports.getMyInfo = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
       throw new NotFoundError('Пользователь по указанному _id не найден');
@@ -88,39 +94,34 @@ module.exports.getMyInfo = (req, res) => {
 };
 
 module.exports.updateProfile = (req, res, next) => {
-
   const { name, about } = req.body;
   const userId = req.user._id;
 
-  User.findByIdAndUpdate(userId, { name: name, about: about },
+  User.findByIdAndUpdate(userId, { name, about },
     {
       new: true,
-      runValidators: true
-    }
-    )
-    .then(user => {
+      runValidators: true,
+    })
+    .then((user) => {
       res.status(200).send({ data: user });
     })
     .catch(next);
 };
 
-
 module.exports.updateAvatar = (req, res, next) => {
-
   const { avatar } = req.body;
   const userId = req.user._id;
 
-  User.findByIdAndUpdate(userId, { avatar: avatar },
+  User.findByIdAndUpdate(userId, { avatar },
     {
       new: true,
-      runValidators: true
-    }
-    )
+      runValidators: true,
+    })
     .then((user) => {
       res.status(200).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === 'ValidationError') {
         err = new BadRequestError('Переданы некорректные данные в методы обновления аватара');
       }
       next(err);
