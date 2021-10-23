@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
-const { ForbiddenError } = require('../errors/errors');
+const { UnauthorizedError } = require('../errors/errors');
 
 module.exports = (req, res, next) => {
 
   const token  = req.cookies.jwt;
 
   if (!token) {
-    throw new ForbiddenError('Необходима авторизация');
+    throw new UnauthorizedError('Необходима авторизация');
   }
 
   let payload;
@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, '4896c10cdc1653614f09e73d4299ddcae7aa4bf7ab0e62211a08857947527149');
   } catch (err) {
     if (err.name === 'JsonWebTokenError') {
-      err = new ForbiddenError('Необходима авторизация');
+      err = new UnauthorizedError('Необходима авторизация');
     }
     next(err);
   }

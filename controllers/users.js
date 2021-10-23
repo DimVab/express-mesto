@@ -10,13 +10,13 @@ module.exports.createUser = (req, res, next) => {
 
   bcrypt.hash(password, 10)
     .then(hash => User.create({ name, about, avatar, email, password: hash }))
-    .then(user => res.status(200).send({ data: user }))
+    .then(user => res.status(200).send({ data: {name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id} }))
     .catch((err) => {
       if (err.name === "MongoServerError" && err.code === 11000) {
         err = new ConflictError('Такой email уже существует');
       }
       if (err.name === "ValidationError") {
-        err = new ConflictError('Ошибка валидации Email');
+        err = new BadRequestError('Ошибка валидации Email');
       }
       next(err);
     });
