@@ -1,11 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
+const { celebrate, Joi, errors } = require('celebrate');
+
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 const usersRoutes = require('./routes/usersRoutes.js');
 const cardsRoutes = require('./routes/cardsRoutes.js');
-const { createUser, login } = require('./controllers/users');
-const cookieParser = require('cookie-parser');
-const auth = require('./middlewares/auth');
-const { celebrate, Joi, errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
