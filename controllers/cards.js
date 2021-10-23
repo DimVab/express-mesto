@@ -5,10 +5,6 @@ module.exports.createCard = (req, res, next) => {
 
   const { name, link } = req.body;
 
-  if ( !link || !name) {
-    throw new BadRequestError(`Передан некорректные данные в методы создания карточки`);
-  }
-
   if ( link && !link.includes("https://") && !link.includes("http://")) {
     throw new BadRequestError(`Передан некорректный адрес`);
   }
@@ -17,12 +13,7 @@ module.exports.createCard = (req, res, next) => {
 
   Card.create({ name, link, owner })
     .then(user => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        err = new BadRequestError(`Переданы некорректные данные в методы создания карточки`);
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 

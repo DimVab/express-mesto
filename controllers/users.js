@@ -16,9 +16,6 @@ module.exports.createUser = (req, res, next) => {
     .then(hash => User.create({ name, about, avatar, email, password: hash }))
     .then(user => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        err = new BadRequestError(`Переданы некорректные данные в методы создания пользователя`);
-      }
       if (err.name === "MongoServerError" && err.code === 11000) {
         err = new ConflictError('Такой emai уже существует');
       }
@@ -110,10 +107,6 @@ module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const userId = req.user._id;
 
-  if (!name || !about) {
-    throw new BadRequestError(`Переданы некорректные данные в методы изменения пользователя`);
-  }
-
   User.findByIdAndUpdate(userId, { name: name, about: about },
     {
       new: true,
@@ -123,12 +116,7 @@ module.exports.updateProfile = (req, res, next) => {
     .then(user => {
       res.status(200).send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        err = new BadRequestError(`Переданы некорректные данные в методы изменения пользователя`);
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 
@@ -136,7 +124,7 @@ module.exports.updateAvatar = (req, res, next) => {
 
   const { avatar } = req.body;
 
-  if (!avatar || ( avatar && !avatar.includes("https://") && !avatar.includes("http://"))) {
+  if (!avatar.includes("https://") && !avatar.includes("http://")) {
     throw new BadRequestError(`Переданы некорректные данные в методы обновления аватара`);
   }
   const userId = req.user._id;
