@@ -2,7 +2,7 @@ const User = require('../models/user');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { BadRequestError, UnauthorizedError, NotFoundError, ConflictError } = require('../errors/errors');
+const { BadRequestError, NotFoundError, ConflictError } = require('../errors/errors');
 
 module.exports.createUser = (req, res, next) => {
 
@@ -29,21 +29,7 @@ module.exports.login = (req, res, next) => {
     throw new BadRequestError('Ошибка валидации Email');
   }
 
-  User.findOne({ email }).select('+password')
-  .then((user) => {
-    if (!user) {
-      throw new UnauthorizedError('Неправильные почта или пароль');
-    }
-
-    return bcrypt.compare(password, user.password)
-    .then((matched) => {
-      if (!matched) {
-        throw new UnauthorizedError('Неправильные почта или пароль');
-      }
-
-      return user;
-    });
-  })
+  return User.findUserByCredentials(email, password)
   .then((user) => {
     const token = jwt.sign(
       { _id: user._id },

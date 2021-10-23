@@ -2,12 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
+const helmet = require('helmet');
 
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const usersRoutes = require('./routes/usersRoutes.js');
 const cardsRoutes = require('./routes/cardsRoutes.js');
 const { NotFoundError } = require('./errors/errors');
+const errorsHandler = require('./errors/errorsHandler');
 
 const { PORT = 3000 } = process.env;
 
@@ -19,6 +21,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet());
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -47,17 +50,7 @@ app.use((req, res, next) => {
  });
 
 app.use(errors());
-
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  console.log(err.name);
-  console.log(err.status);
-
-  res
-    .status(statusCode)
-    .send({message: statusCode === 500 ? 'На сервере произошла ошибка' : message});
-});
+app.use(errorsHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
