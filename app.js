@@ -10,6 +10,7 @@ const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-error');
 const errorsHandler = require('./middlewares/errors-handler');
+const { urlPatternForJoi } = require('./utils/url-patterns');
 
 const { PORT = 3000 } = process.env;
 
@@ -36,8 +37,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(new RegExp('^https?://(www.)?[a-z0-9-]+\\.[a-z]+[/]*[a-z0-9-._~:/?#[\\]@!$&()*,;=+]*$')),
-    // почему-то Joi не видит точку как знак перпинания, если её экранировать одним слешем (/.)
+    avatar: Joi.string().pattern(new RegExp(urlPatternForJoi)),
   }),
 }), createUser);
 

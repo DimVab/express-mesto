@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { urlPattern } = require('../utils/url-patterns');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,7 +12,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (avatar) => /^https?:\/\/(www.)?[a-z0-9-]+\.[a-z]+[/]*[a-z0-9\-._~:/?#[\]@!$&()*,;=+]*$/.test(avatar),
+      validator: (avatar) => urlPattern.test(avatar),
     },
   },
   owner: {
