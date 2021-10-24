@@ -36,7 +36,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(new RegExp('^https?:\/\/(www.)?[a-z0-9\-]+\\.[a-z]+[\/]*[a-z0-9\-._~:/?#[\\]@!$&()*,;=+]*$')),
+    avatar: Joi.string().pattern(new RegExp('^https?://(www.)?[a-z0-9-]+\\.[a-z]+[/]*[a-z0-9-._~:/?#[\\]@!$&()*,;=+]*$')),
     // почему-то Joi не видит точку как знак перпинания, если её экранировать одним слешем (/.)
   }),
 }), createUser);

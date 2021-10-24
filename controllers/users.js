@@ -23,10 +23,10 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'MongoServerError' && err.code === 11000) {
-        err = new ConflictError('Такой email уже существует');
+        next(new ConflictError('Такой email уже существует'));
       }
       if (err.name === 'ValidationError') {
-        err = new BadRequestError('Ошибка валидации Email');
+        next(new BadRequestError('Ошибка валидации Email'));
       }
       next(err);
     });
@@ -71,7 +71,7 @@ module.exports.getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        err = new BadRequestError('Передан невалидный _id пользователя');
+        next(new BadRequestError('Передан невалидный _id пользователя'));
       }
       next(err);
     });
@@ -87,7 +87,7 @@ module.exports.getMyInfo = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        err = new BadRequestError('Передан невалидный _id пользователя');
+        next(new BadRequestError('Передан невалидный _id пользователя'));
       }
       next(err);
     });
@@ -122,7 +122,7 @@ module.exports.updateAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        err = new BadRequestError('Переданы некорректные данные в методы обновления аватара');
+        next(new BadRequestError('Переданы некорректные данные в методы обновления аватара'));
       }
       next(err);
     });
