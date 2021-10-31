@@ -11,6 +11,7 @@ const cardsRoutes = require('./routes/cards');
 const NotFoundError = require('./errors/not-found-error');
 const errorsHandler = require('./middlewares/errors-handler');
 const { urlPatternForJoi } = require('./utils/url-patterns');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -23,6 +24,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -48,6 +50,8 @@ app.use(cardsRoutes);
 app.use((req, res, next) => {
   next(new NotFoundError('Маршрут не найден'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 app.use(errorsHandler);
