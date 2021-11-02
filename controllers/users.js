@@ -55,6 +55,15 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.logout = (req, res, next) => {
+  try {
+    res.clearCookie('jwt').status(200).send({ message: 'Вы вышли из аккаунта' });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 module.exports.getUsers = (req, res, next) => {
   User.find()
     .then((users) => res.status(200).send({ data: users }))
