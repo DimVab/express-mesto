@@ -1,6 +1,0 @@
-@media screen and (max-width: 620px) {
-  .header_logined {
-    flex-direction: column-reverse;
-    align-items: center;
-  }
-}
