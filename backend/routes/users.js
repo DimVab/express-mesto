@@ -3,10 +3,11 @@ const { celebrate, Joi } = require('celebrate');
 const { urlPatternForJoi } = require('../utils/url-patterns');
 
 const {
-  getUser, getMyInfo, getUsers, updateProfile, updateAvatar, logout,
+  getUser, getMyInfo, getUsers, updateProfile, updateAvatar, logout, checkToken,
 } = require('../controllers/users');
 
 usersRoutes.get('/signout', logout);
+usersRoutes.get('/identify', checkToken);
 usersRoutes.get('/users', getUsers);
 usersRoutes.get('/users/me', getMyInfo);
 usersRoutes.get('/users/:userId', celebrate({

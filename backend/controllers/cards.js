@@ -8,7 +8,7 @@ module.exports.createCard = (req, res, next) => {
   const owner = req.user._id;
 
   Card.create({ name, link, owner })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Передан некорректный адрес'));
@@ -19,7 +19,7 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.getCards = (req, res, next) => {
   Card.find()
-    .then((cards) => res.status(200).send({ data: cards }))
+    .then((cards) => res.status(200).send(cards))
     .catch(next);
 };
 
@@ -29,7 +29,7 @@ module.exports.getCard = (req, res, next) => {
       throw new NotFoundError('Карточка по указанному _id не найдена');
     })
     .then((card) => {
-      res.status(200).send({ data: card });
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -49,7 +49,7 @@ module.exports.likeCard = (req, res, next) => {
       throw new NotFoundError('Карточка по указанному _id не найдена');
     })
     .then((card) => {
-      res.status(200).send({ data: card });
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -69,7 +69,7 @@ module.exports.dislikeCard = (req, res, next) => {
       throw new NotFoundError('Карточка по указанному _id не найдена');
     })
     .then((card) => {
-      res.status(200).send({ data: card });
+      res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

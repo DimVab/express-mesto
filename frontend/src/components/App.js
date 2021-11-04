@@ -30,9 +30,16 @@ function App() {
 
   const history = useHistory();
 
-  // валидация токена происходит автоматически через cookie
   React.useEffect(() => {
-    getInitialData();
+    // сначала посылается запрос на защищённый адрес, затем в случае успеха посылается запрос на первоначальные данные
+    auth.checkToken()
+    .then(() => {
+      getInitialData();
+    })
+    .catch(() => {
+      console.log('Необходима авторизация');
+    });
+
   }, []);
 
   React.useEffect(() => {
@@ -50,7 +57,7 @@ function App() {
   function handleCardLike(card) {
     api.likeCard(card._id)
       .then((newCard) => {
-          setCards((cards) => cards.map((c) => c._id === card._id ? newCard.data : c));
+          setCards((cards) => cards.map((c) => c._id === card._id ? newCard : c));
       })
       .catch((err) => {
         console.log(err);
@@ -60,7 +67,7 @@ function App() {
   function handleRemoveCardLike(card) {
     api.removeLikeCard(card._id)
       .then((newCard) => {
-          setCards((cards) => cards.map((c) => c._id === card._id ? newCard.data : c));
+          setCards((cards) => cards.map((c) => c._id === card._id ? newCard : c));
       })
       .catch((err) => {
         console.log(err);
@@ -80,7 +87,7 @@ function App() {
   function handleUpdateUser(userData) {
     api.editUserInfo(userData)
       .then((newUserInfo) => {
-        setCurrentUser(newUserInfo.data);
+        setCurrentUser(newUserInfo);
         closeAllPopups();
       })
       .catch((err) => {
@@ -91,7 +98,7 @@ function App() {
   function handleUpdateAvatar(avatarUrl) {
     api.editAvatar(avatarUrl)
       .then((newUserInfo) => {
-        setCurrentUser(newUserInfo.data);
+        setCurrentUser(newUserInfo);
         closeAllPopups();
       })
       .catch((err) => {
@@ -102,7 +109,7 @@ function App() {
   function handleAddPlaceSubmit(newCardInfo) {
     api.addCard(newCardInfo)
       .then((newCard) => {
-        setCards([newCard.data, ...cards]);
+        setCards([newCard, ...cards]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -113,7 +120,6 @@ function App() {
   function handleRegister(password, email) {
     auth.register(password, email)
       .then((res) => {
-        console.log(res);
         setRegistrationStatus(true);
         history.push('./sign-in');
       })
@@ -151,13 +157,13 @@ function App() {
   function getInitialData() {
     api.getInitialData()
     .then((data) => {
-      const [initialCardsData, userInfoData] = data;
-      setCurrentUser(userInfoData.data);
-      setCards(initialCardsData.data.reverse());
       setLoggedIn(true);
+      const [initialCardsData, userInfoData] = data;
+      setCurrentUser(userInfoData);
+      setCards(initialCardsData.reverse());
     })
-    .catch(() => {
-      console.log('Необходима авторизация');
+    .catch((err) => {
+      console.log(`${err}: на сервере произошла ошибка`);
     });
   }
 

@@ -6,6 +6,7 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/bad-request-error');
 const NotFoundError = require('../errors/not-found-error');
 const ConflictError = require('../errors/conflict-error');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -17,9 +18,7 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => res.status(200).send({
-      data: {
-        name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id,
-      },
+      name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id,
     }))
     .catch((err) => {
       if (err.name === 'MongoServerError' && err.code === 11000) {
@@ -43,7 +42,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        '4896c10cdc1653614f09e73d4299ddcae7aa4bf7ab0e62211a08857947527149',
+        NODE_ENV === 'production' ? JWT_SECRET : 'development',
         { expiresIn: '7d' },
       );
 
@@ -64,9 +63,18 @@ module.exports.logout = (req, res, next) => {
   }
 };
 
+module.exports.checkToken = (req, res, next) => {
+  try {
+    res.status(204).send();
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 module.exports.getUsers = (req, res, next) => {
   User.find()
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.status(200).send(users))
     .catch(next);
 };
 
@@ -76,7 +84,7 @@ module.exports.getUser = (req, res, next) => {
       throw new NotFoundError('Пользователь по указанному _id не найден');
     })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -92,7 +100,7 @@ module.exports.getMyInfo = (req, res, next) => {
       throw new NotFoundError('Пользователь по указанному _id не найден');
     })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -112,7 +120,7 @@ module.exports.updateProfile = (req, res, next) => {
       runValidators: true,
     })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch(next);
 };
@@ -127,7 +135,7 @@ module.exports.updateAvatar = (req, res, next) => {
       runValidators: true,
     })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

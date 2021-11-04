@@ -29,6 +29,21 @@ class Auth {
       .then(this._handleResponse);
   }
 
+  checkToken() {
+    return fetch(`${this._baseUrl}/identify`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: this._headers,
+      })
+      .then((res) => {
+        if(res.ok) {
+          return res;
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
+        }
+      );
+  }
+
   logout() {
     return fetch(`${this._baseUrl}/signout`, {
       method: 'GET',
