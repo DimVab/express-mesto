@@ -1,5 +1,12 @@
 module.exports = (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
+  const allowedCors = [
+    'https://mesto.vab.nomoredomains.rocks',
+    'http://mesto.vab.nomoredomains.rocks',
+  ];
+  const { origin } = req.headers;
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
   res.header('Access-Control-Allow-Credentials', true);
 
   const requestHeaders = req.headers['access-control-request-headers'];
