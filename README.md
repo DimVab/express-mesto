@@ -75,7 +75,7 @@ Back-end:
 `npm run start` — запускает сервер  
 `npm run dev` — запускает сервер с hot-reload  
 
-**Ссылки на приложение:**
+**Ссылки на приложение:**  
 http://178.154.223.80  
 http://mesto.vab.nomoredomains.rocks  
 https://mesto.vab.nomoredomains.rocks  
